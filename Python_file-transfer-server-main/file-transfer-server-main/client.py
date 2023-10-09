@@ -4,23 +4,26 @@ import os
 HOST = input("Enter the server ip:")
 PORT = 6060
 
-client = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-client.connect((HOST,PORT))
+client.connect((HOST, PORT))
 
 print(f"Connected to {HOST}")
 
 help_text = """dir = Display the files present in the directory
 upload = Upload files to server
-download  = Download file from server
+download = Download file from server
+delete = Delete file from server
 help = Display this msg
 exit = Close the connection
 """
+
 
 def getdir(client):
     directory = client.recv(1024).decode()
     print(directory)
     print("\n")
+
 
 def upload(client):
     fpath = input("Enter the file path:")
@@ -37,8 +40,9 @@ def upload(client):
             client.send(data)
         # Send the "END_OF_FILE" marker to signal the end of the file
         client.send(b'END_OF_FILE')
-    
+
     print("The file has been uploaded")
+
 
 def download(client):
     fname = input("Enter a file name which is present in the dir: ")
@@ -59,15 +63,14 @@ def download(client):
 
 
 
-
 def deletefile(client):
     fname = input("Enter the file name to be deleted: ")
     client.send(fname.encode())
     print(client.recv(1024).decode())
-    
+
 
 while (1):
-    
+
     directory = client.recv(1024).decode()
     choice = input(f"{directory}: ")
     client.send(choice.encode())
@@ -75,14 +78,13 @@ while (1):
         getdir(client)
     elif choice == "upload":
         upload(client)
-    elif choice == "download":
-        download(client)
+    # elif choice == "download":
+    #     download(client)
     elif choice == "delete":
         deletefile(client)
     elif choice == "help":
-        print("\n",help_text,sep="")
+        print("\n", help_text, sep="")
     elif choice == "exit":
         print("Exiting....")
         client.close()
         break
-

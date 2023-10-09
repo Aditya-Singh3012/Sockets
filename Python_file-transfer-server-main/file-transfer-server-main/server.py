@@ -2,22 +2,23 @@ import socket
 import os
 
 folder = "server_folder"
-print("The server ip is",socket.gethostbyname(socket.gethostname()))
+print("The server ip is", socket.gethostbyname(socket.gethostname()))
 
 HOST = socket.gethostname()
 
 PORT = 6060
 
-server = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-server.bind((HOST,PORT))
+server.bind((HOST, PORT))
 
 server.listen()
 
 print("Listening for connections...")
 
-folder_location = os.getcwd()+"\\"+folder
+folder_location = os.getcwd() + "\\" + folder
 os.chdir(folder_location)
+
 
 def change_dir(conn):
     directory = os.listdir()
@@ -26,11 +27,12 @@ def change_dir(conn):
     for i in directory:
         dirstr = dirstr + "\n" + i
 
-    if len(dirstr)>0:
+    if len(dirstr) > 0:
         conn.send(dirstr.encode())
     else:
         conn.send("No files found".encode())
     print("Sent contents of dir")
+
 
 def download(client):
     fname = client.recv(1024).decode()
@@ -46,7 +48,6 @@ def download(client):
         # Send the "END_OF_FILE" marker to indicate the end of the file transfer
         client.send(b'END_OF_FILE')
     print("File sent")
-
 
 
 def upload(client):
@@ -74,12 +75,13 @@ def delete(client):
     client.send("File deleted".encode())
     print("File removed")
 
+
 while (1):
-    conn , addr = server.accept()
+    conn, addr = server.accept()
     print(f"Connection received from {addr}")
     while (1):
-        #directory = os.getcwd()
-        conn.send((socket.gethostname()+f"\\{folder}>").encode())
+        # directory = os.getcwd()
+        conn.send((socket.gethostname() + f"\\{folder}>").encode())
         choice = conn.recv(1024).decode()
         if choice.startswith("dir"):
             change_dir(conn)
@@ -94,7 +96,7 @@ while (1):
             continue
         elif choice == "exit":
             break
-    
+
     conn.close()
     print("Connection closed")
     break
